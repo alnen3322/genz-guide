@@ -329,17 +329,26 @@ footer .fs{font-size:10px;color:var(--slate-lt);letter-spacing:.06em}
     if (badName || badEmail) { (badName ? name : email).focus(); return; }
     if (hp.value !== '') return; // honeypot tripped — silently drop
 
-    /* ==========================================================
-       REPLACE THIS BLOCK with your email platform submission.
-       Example (generic POST endpoint):
-
-       fetch('https://YOUR-ESP-ENDPOINT', {
-         method: 'POST',
-         headers: {'Content-Type':'application/json'},
-         body: JSON.stringify({ name: name.value.trim(), email: email.value.trim() })
-       }).then(function(){ card.classList.add('done'); });
-       ========================================================== */
-    card.classList.add('done'); // demo: show success state immediately
+      fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.value.trim(),
+          firstName: name.value.trim(),
+          lastName: ''
+        })
+      })
+      .then(function(res) {
+        if (!res.ok) throw new Error('Bad response');
+        return res.json();
+      })
+      .then(function() {
+        card.classList.add('done');
+      })
+      .catch(function(err) {
+        console.error('Subscribe error:', err);
+        alert('Something went wrong. Please try again.');
+      }); // demo: show success state immediately
   });
 })();
 </script>
